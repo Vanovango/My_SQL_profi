@@ -21,50 +21,6 @@ def connect_to_data():
         return None, None
 
 
-def execute_sql_script():
-
-    script_path = './Dump20250603.sql'
-    connection = None
-    cursor = None
-
-    try:
-        # Устанавливаем соединение с базой данных
-        connection, db = connect_to_data()
-        if connection.is_connected():
-            print("Успешно подключено к базе данных")
-
-            # Читаем SQL-скрипт из файла
-            with open(script_path, 'r') as file:
-                sql_script = file.read()
-
-            # Разделяем скрипт на отдельные команды
-            sql_statements = sql_script.split(';')
-
-            # Выполняем каждую команду
-            cursor = connection.cursor()
-            for statement in sql_statements:
-                if statement.strip():
-                    cursor.execute(statement)
-                    print(f"Выполнено: {statement.strip()}")
-
-            # Фиксируем изменения
-            connection.commit()
-            print("SQL-скрипт успешно выполнен")
-
-    except Error as e:
-        print(f"Произошла ошибка: {e}")
-        if connection:
-            connection.rollback()
-
-    finally:
-        # Закрываем соединение
-        if connection and connection.is_connected():
-            cursor.close()
-            connection.close()
-            print("Соединение с базой данных закрыто")
-
-
-
 def create_df(table):
     cursor, db = connect_to_data()
     if not cursor:
@@ -129,7 +85,9 @@ table_mapping = {
     'вклады_фл': vk_fl,
     'вклады_юл': vk_ul,
     'задолженность_юл': zd_ul,
-    'задолженность_фл': zd_fl
+    'задолженность_фл': zd_fl,
+    'коды_регионов': reg_name,
+    'коды_округов': okr_name
 }
 
 table_fullname = {

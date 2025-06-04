@@ -3,8 +3,8 @@ import pandas as pd
 import db_init
 
 def delete_data():
-    mycursor, db = db_init.connect_to_data()
-    if not mycursor:
+    cursor, db = db_init.connect_to_data()
+    if not cursor:
         return
 
     try:
@@ -15,8 +15,8 @@ def delete_data():
 
         confirmation = input(f"Вы уверены, что хотите УДАЛИТЬ ВСЕ данные из таблицы '{table_name}'? (y/n): ").strip().lower()
         if confirmation == 'y':
-            mycursor.execute("USE reg_finance")
-            mycursor.execute(f"DELETE FROM {table_name}")
+            cursor.execute("USE reg_finance")
+            cursor.execute(f"DELETE FROM {table_name}")
             db.commit()
             print(f"Все данные из таблицы '{table_name}' успешно удалены.")
         else:
@@ -29,8 +29,8 @@ def delete_data():
             db.close()
 
 def add_data():
-    mycursor, db = db_init.connect_to_data()
-    if not mycursor:
+    cursor, db = db_init.connect_to_data()
+    if not cursor:
         return
 
     try:
@@ -38,19 +38,27 @@ def add_data():
         if table_name not in db_init.table_mapping:
             print(f"Таблица '{table_name}' не найдена.")
             return
+
         df = db_init.create_df(table_name)
         column_names = list(df.columns)
         values = []
         print("Введите значения для каждого столбца. Оставьте поле пустым для значения NULL.")
+
         for col in column_names:
             value = input(f"Введите значение для '{col}': ").strip()
+            # if table_name in ['коды_регионов', 'коды_округов']:
+            #     values.append(value)
+            # else:
             values.append(None if value == "" else db_init.numeric_convert(value))
+
         placeholders = ', '.join(['%s'] * len(column_names))
+
         sql = f"INSERT INTO {table_name} ({', '.join(column_names)}) VALUES ({placeholders})"
-        mycursor.execute("USE reg_finance")
-        mycursor.execute(sql, values)
+        cursor.execute("USE reg_finance")
+        cursor.execute(sql, values)
         db.commit()
         print("Данные успешно добавлены.")
+
     except Error as e:
         print(f"Ошибка при добавлении данных: {e}")
         db.rollback()
@@ -59,8 +67,8 @@ def add_data():
             db.close()
 
 def edit_data():
-    mycursor, db = db_init.connect_to_data()
-    if not mycursor:
+    cursor, db = db_init.connect_to_data()
+    if not cursor:
         return
 
     try:
@@ -88,10 +96,11 @@ def edit_data():
         new_value = None if new_value == "" else db_init.numeric_convert(new_value)
 
         sql = f"UPDATE {table_name} SET `{column_name}` = %s WHERE {where_condition}"
-        mycursor.execute("USE reg_finance")
-        mycursor.execute(sql, (new_value,))
+        cursor.execute("USE reg_finance")
+        cursor.execute(sql, (new_value,))
         db.commit()
         print("Данные успешно обновлены.")
+
     except Error as e:
         print(f"Ошибка при обновлении данных: {e}")
         db.rollback()
@@ -111,16 +120,16 @@ def view_data():
     print(df)
 
 def show_region_data(region_code):
-    mycursor, db = db_init.connect_to_data()
-    if not mycursor:
+    cursor, db = db_init.connect_to_data()
+    if not cursor:
         return
 
     try:
-        mycursor.execute("USE reg_finance")
+        cursor.execute("USE reg_finance")
         tables = list(db_init.table_mapping.keys())
         for table in tables:
-            mycursor.execute(f"SELECT * FROM {table} WHERE код_региона = %s", (region_code,))
-            rows = mycursor.fetchall()
+            cursor.execute(f"SELECT * FROM {table} WHERE код_региона = %s", (region_code,))
+            rows = cursor.fetchall()
             if rows:
                 print(f"Таблица: {table}")
                 for row in rows:
@@ -134,15 +143,15 @@ def show_region_data(region_code):
             db.close()
 
 def show_multiple_regions_data(table_name, region_codes):
-    mycursor, db = db_init.connect_to_data()
-    if not mycursor:
+    cursor, db = db_init.connect_to_data()
+    if not cursor:
         return
 
     try:
-        mycursor.execute("USE reg_finance")
+        cursor.execute("USE reg_finance")
         placeholders = ', '.join(['%s'] * len(region_codes))
-        mycursor.execute(f"SELECT * FROM {table_name} WHERE код_региона IN ({placeholders})", tuple(region_codes))
-        rows = mycursor.fetchall()
+        cursor.execute(f"SELECT * FROM {table_name} WHERE код_региона IN ({placeholders})", tuple(region_codes))
+        rows = cursor.fetchall()
         if rows:
             print(f"Таблица: {table_name}")
             for row in rows:

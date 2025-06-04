@@ -1,10 +1,10 @@
+import os
+
 import db_init
 import db_operations
 import data_analysis
 
 def main():
-    db_init.execute_sql_script()
-
     while True:
         print("\n1. Редактирование и работа с БД")
         print("2. Анализ данных")
@@ -20,6 +20,7 @@ def main():
             break
         else:
             print("Некорректный выбор. Попробуйте снова.")
+
 
 def db_menu():
     while True:
@@ -41,6 +42,7 @@ def edit_menu():
     print("\ni. Удаление")
     print("ii. Добавление")
     print("iii. Изменение")
+    print("0. Назад")
     edit_choice = input("Выберите опцию: ").strip()
 
     if edit_choice == "i":
@@ -49,6 +51,8 @@ def edit_menu():
         db_operations.add_data()
     elif edit_choice == "iii":
         db_operations.edit_data()
+    elif edit_choice == "0":
+        return
     else:
         print("Некорректный выбор.")
 
@@ -56,6 +60,8 @@ def work_menu():
     print("\ni. Показать 1 таблицу целиком")
     print("ii. Показать данные 1 региона во всех таблицах")
     print("iii. Показать данные нескольких регионов в 1 таблице")
+    print("0. Назад")
+
     work_choice = input("Выберите опцию: ").strip()
 
     if work_choice == "i":
@@ -67,6 +73,8 @@ def work_menu():
         table_name = input("Введите имя таблицы: ").strip()
         region_codes = input("Введите коды регионов через пробел: ").strip().split()
         db_operations.show_multiple_regions_data(table_name, region_codes)
+    elif work_choice == "0":
+        return
     else:
         print("Некорректный выбор.")
 
@@ -76,6 +84,8 @@ def analysis_menu():
     print("c) Анализ распределения")
     print("d) Фиксирование аномалий")
     print("e) Прогнозирование")
+    print("0. Назад")
+
     analysis_choice = input("Выберите опцию: ").strip()
 
     if analysis_choice == "a":
@@ -88,6 +98,8 @@ def analysis_menu():
         data_analysis.anomaly_detection()
     elif analysis_choice == "e":
         data_analysis.data_forecasting()
+    elif analysis_choice == "0":
+        return
     else:
         print("Некорректный выбор.")
 
