@@ -86,13 +86,15 @@ def correlation_analysis():
         print("Ошибка: Введен некорректный год.")
         return
 
+    year_col = str(selected_year)
     yearly_dataframes = {}
     for table_name, df in db_init.table_mapping.items():
-        if df is None or selected_year not in df.columns:
+        if df is None or year_col not in df.columns:
             continue
-        if pd.api.types.is_numeric_dtype(df[selected_year]):
-            yearly_dataframes[table_name] = df[[selected_year]].copy()
-            yearly_dataframes[table_name].rename(columns={selected_year: table_name}, inplace=True)
+        col = df[year_col]
+        if pd.api.types.is_numeric_dtype(col):
+            yearly_dataframes[table_name] = df[[year_col]].copy()
+            yearly_dataframes[table_name].rename(columns={year_col: table_name}, inplace=True)
 
     if not yearly_dataframes:
         print(f"Нет таблиц с данными за {selected_year} год.")
