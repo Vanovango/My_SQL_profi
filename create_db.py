@@ -2,18 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 
 def load_sql_dump(db_config, sql_file_path):
-    """
-    Открывает SQL-файл дампа и выполняет его команды для заполнения базы данных.
 
-    :param db_config: Словарь с параметрами подключения к MySQL.
-                      Пример: {
-                          'host': '127.0.0.1',
-                          'user': 'root',
-                          'passwd': 'ваш_пароль',
-                          'database': 'reg_finance'
-                      }
-    :param sql_file_path: Путь к SQL-файлу дампа (например, 'Dump20250603.sql').
-    """
     connection = None
     cursor = None
     try:
@@ -78,7 +67,7 @@ if __name__ == "__main__":
     db_config = {
         'host': '127.0.0.1',
         'user': 'root',
-        'passwd': '2431',  # Замените на ваш пароль
+        'passwd': '2431',
         'database': 'reg_finance'
     }
 
